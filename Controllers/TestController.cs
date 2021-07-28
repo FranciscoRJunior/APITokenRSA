@@ -125,6 +125,15 @@ namespace APITokenTest.Controllers
         {
             return Ok(new { Result = "O Token está Funcionando!" });
         }
+
+
+        [Authorize(AuthenticationSchemes = "symm")]
+        [HttpGet(nameof(VerifyTokenSymmetric))]
+        public async Task<IActionResult> VerifyTokenSymmetric()
+        {
+            return Ok(new { Result = "O Token Simétrico está Funcionando!" });
+        }
+
     }
 
 }
