@@ -37,8 +37,8 @@ namespace APITokenTest
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "APITokenTest", Version = "v1" });
             });
-            #region Criar Chaves Privadas e Publicas
 
+            #region Criar Chaves Privadas e Publicas
             // Função feita para Criar as chaves quando a aplicação for iniciada
 
             //Pegando as informações do appsetings.json para carregar a classe modelo
@@ -148,9 +148,19 @@ namespace APITokenTest
                 });
 
             #endregion
+
+            #region Cors
+            services.AddCors(options => {
+                options.AddPolicy("myPolicy", x => {
+                    x.AllowAnyOrigin()
+                     .AllowAnyMethod()
+                     .AllowAnyHeader();
+                });
+            });
+            #endregion
         }
 
-        
+
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -160,6 +170,7 @@ namespace APITokenTest
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "APITokenTest v1"));
             }
 
+            app.UseCors("myPolicy");
             app.UseRouting();
 
             //Para a Autenticação JWT Funcionar, você precisa definir que a API vai usar autenticação

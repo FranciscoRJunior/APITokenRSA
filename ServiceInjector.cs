@@ -18,19 +18,22 @@ namespace APITokenTest
             string keysFolder = Path.GetDirectoryName(options.PrivateKeyFilePath);
 
             //Verifica se a pasta já esxiste no projeto, caso não exista ela será criada.
-            if (!Directory.Exists(keysFolder)) Directory.CreateDirectory(keysFolder);
+            if (!Directory.Exists(keysFolder))
+            {
+                Directory.CreateDirectory(keysFolder);
 
-            //Criando as chaves privada e publica utilizando o metodo RSA
-            var rsa = RSA.Create();
-            string privateKeyXml = rsa.ToXmlString(true);
-            string publicKeyXml = rsa.ToXmlString(false);
+                //Criando as chaves privada e publica utilizando o metodo RSA
+                var rsa = RSA.Create();
+                string privateKeyXml = rsa.ToXmlString(true);
+                string publicKeyXml = rsa.ToXmlString(false);
 
-            using var privateFile = File.Create(options.PrivateKeyFilePath);
-            using var publicFile = File.Create(options.PublicKeyFilePath);
+                using var privateFile = File.Create(options.PrivateKeyFilePath);
+                using var publicFile = File.Create(options.PublicKeyFilePath);
 
-            //Criando/Sobrescrevendo dados das chaves em um arquivo XML 
-            privateFile.Write(Encoding.ASCII.GetBytes(privateKeyXml));
-            publicFile.Write(Encoding.ASCII.GetBytes(publicKeyXml));
+                //Criando/Sobrescrevendo dados das chaves em um arquivo XML 
+                privateFile.Write(Encoding.ASCII.GetBytes(privateKeyXml));
+                publicFile.Write(Encoding.ASCII.GetBytes(publicKeyXml));
+            }
 
             //Retornando o serviço solicitado
             return services;
