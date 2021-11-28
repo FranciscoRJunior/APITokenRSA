@@ -1,5 +1,4 @@
 ﻿using APITokenTest.Configurations;
-using loginVS2.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -48,7 +47,7 @@ namespace APITokenTest.Controllers
                 new JwtPayload(
                     "webapi",
                     "webapi",
-                    new List<Claim> { new Claim("id","1"), new Claim("name", "Francisco"), },
+                    new List<Claim>(),
                     DateTime.UtcNow,
                     DateTime.UtcNow.AddMinutes(5)
                     )
@@ -64,8 +63,8 @@ namespace APITokenTest.Controllers
         public async Task<IActionResult> GetPublicToken()
         {
             //Instanciando o metodo create do RSA
-            var rsa = RSA.Create();
             await GetPrivateToken();
+            var rsa = RSA.Create();
 
             //Lendo Informações da chave privada (/Keys/PrivateKey.xml)
             string key = await System.IO.File.ReadAllTextAsync(options.PublicKeyFilePath);
@@ -90,45 +89,6 @@ namespace APITokenTest.Controllers
             string token = new JwtSecurityTokenHandler().WriteToken(jwt);
             return Ok(new { Token = token });
         }
-
-        //Metodo para Teste
-        [HttpPost]
-        public async Task<IActionResult> PostPublicToken(string username, string password)
-        {
-            //if (user == null) { return BadRequest(); }
-
-            if (username.Equals("bsato") && password.Equals("1234"))
-            {
-                //Instanciando o metodo create do RSA
-                var rsa = RSA.Create();
-
-                //Lendo Informações da chave privada (/Keys/PrivateKey.xml)
-                string key = await System.IO.File.ReadAllTextAsync(options.PublicKeyFilePath);
-
-                //Passando a chave para a instancia do RSA
-                rsa.FromXmlString(key);
-
-                //Criando nossas credenciais de acesso usando o algoritimo RSA
-                var credentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSha256);
-
-                var jwt = new JwtSecurityToken(
-                    new JwtHeader(credentials),
-                    new JwtPayload(
-                        "webapi",
-                        "webapi",
-                        new List<Claim>(),
-                        DateTime.UtcNow,
-                        DateTime.UtcNow.AddMinutes(5)
-                        )
-                    );
-
-                string token = new JwtSecurityTokenHandler().WriteToken(jwt);
-                return Ok(new { Token = token });
-            }
-
-            return Unauthorized();
-        }
-     
 
         //Metodo para retornar o token usando uma chave Simetrica
         [HttpGet(nameof(GetSymetricToken))]
@@ -167,12 +127,6 @@ namespace APITokenTest.Controllers
             return Ok(new { Result = "O Token está Funcionando!" });
         }
 
-        [Authorize(AuthenticationSchemes = "public")]
-        [HttpGet(nameof(VerifyTokenPublic))]
-        public async Task<IActionResult> VerifyTokenPublic()
-        {
-            return Ok(new { Result = "O Token está Funcionando!" });
-        }
 
         [Authorize(AuthenticationSchemes = "symm")]
         [HttpGet(nameof(VerifyTokenSymmetric))]

@@ -34,7 +34,6 @@ namespace APITokenTest
                 privateFile.Write(Encoding.ASCII.GetBytes(privateKeyXml));
                 publicFile.Write(Encoding.ASCII.GetBytes(publicKeyXml));
             }
-
             //Retornando o serviço solicitado
             return services;
         }

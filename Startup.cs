@@ -2,17 +2,11 @@ using APITokenTest.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -86,72 +80,74 @@ namespace APITokenTest
                     };
                 })
                 //Chave Publica
-                .AddJwtBearer("public",option =>
-                {
+                .AddJwtBearer("public", option =>
+                 {
                     //Carregando nossa chave Publica
                     var rsa = RSA.Create();
-                    string key = File.ReadAllText(securityOptions.PublicKeyFilePath);
-                    rsa.FromXmlString(key);
+                     string key = File.ReadAllText(securityOptions.PublicKeyFilePath);
+                     rsa.FromXmlString(key);
 
                     //Definindo Eventos de Sucesso e Falha na autenticação
                     option.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = x => Task.CompletedTask,
-                        OnAuthenticationFailed = x => Task.CompletedTask,
-                        OnTokenValidated = x => Task.CompletedTask,
-                    };
+                     {
+                         OnMessageReceived = x => Task.CompletedTask,
+                         OnAuthenticationFailed = x => Task.CompletedTask,
+                         OnTokenValidated = x => Task.CompletedTask,
+                     };
 
                     //Definindo parametros de autenticação do Token
                     option.TokenValidationParameters = new TokenValidationParameters
-                    {
+                     {
                         //Definindo que tipo de validações vamos requerer do token
                         ValidateAudience = true,
-                        ValidateIssuer = true,
-                        ValidateLifetime = true,
-                        ValidateActor = true,
+                         ValidateIssuer = true,
+                         ValidateLifetime = true,
+                         ValidateActor = true,
 
                         //Definindo Emissor e servidores Validos
                         ValidIssuer = "webapi",
-                        ValidAudience = "webapi",
+                         ValidAudience = "webapi",
 
                         //Definindo Chave de Assinatura válida                        
                         IssuerSigningKey = new RsaSecurityKey(rsa)
-                    };
-                })
+                     };
+                 })
                 //Chave Simetrica
-                .AddJwtBearer("symm",option =>
-                {                   
+                .AddJwtBearer("symm", option =>
+                 {
                     //Definindo Eventos de Sucesso e Falha na autenticação
                     option.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = x => Task.CompletedTask,
-                        OnAuthenticationFailed = x => Task.CompletedTask,
-                        OnTokenValidated = x => Task.CompletedTask,
-                    };
+                     {
+                         OnMessageReceived = x => Task.CompletedTask,
+                         OnAuthenticationFailed = x => Task.CompletedTask,
+                         OnTokenValidated = x => Task.CompletedTask,
+                     };
 
                     //Definindo parametros de autenticação do Token
                     option.TokenValidationParameters = new TokenValidationParameters
-                    {
+                     {
                         //Definindo que tipo de validações vamos requerer do token
                         ValidateAudience = true,
-                        ValidateIssuer = true,
-                        ValidateLifetime = true,
-                        ValidateActor = true,
+                         ValidateIssuer = true,
+                         ValidateLifetime = true,
+                         ValidateActor = true,
 
                         //Definindo Emissor e servidores Validos
                         ValidIssuer = "webapi",
-                        ValidAudience = "webapi",
+                         ValidAudience = "webapi",
 
                         //Definindo Chave de Assinatura válida                        
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(securityOptions.SymmetricKey))
-                    };
-                });
+                     };
+                 });
 
             #endregion
 
             #region Cors
-            services.AddCors(options => {
-                options.AddPolicy("myPolicy", x => {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("myPolicy", x =>
+                {
                     x.AllowAnyOrigin()
                      .AllowAnyMethod()
                      .AllowAnyHeader();
@@ -163,12 +159,11 @@ namespace APITokenTest
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "APITokenTest v1"));
-            }
+
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "APITokenTest v1"));
+
 
             app.UseCors("myPolicy");
             app.UseRouting();
